@@ -1,0 +1,1 @@
+# whistle-lang vscode support

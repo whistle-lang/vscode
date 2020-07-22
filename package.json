@@ -1,0 +1,40 @@
+{
+  "name": "whistle-lang",
+  "displayName": "Whistle Lang",
+  "description": "Support for the whistle language",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.47.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "whistle",
+        "aliases": [
+          "Whistle",
+          "whistle"
+        ],
+        "extensions": [
+          "whi"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "whistle",
+        "scopeName": "source.whistle",
+        "path": "./syntaxes/whistle.tmLanguage.json"
+      }
+    ]
+  },
+  "devDependencies": {
+    "js-yaml": "^3.14.0"
+  },
+  "scripts": {
+    "build": "js-yaml syntaxes/whistle.tmLanguage.yml > syntaxes/whistle.tmLanguage.json"
+  }
+}

@@ -1,0 +1,29 @@
+name: Whistle
+scopeName: source.whistle
+patterns:
+  - include: "#keywords"
+  - include: "#strings"
+repository:
+  keywords:
+    patterns:
+      - name: keyword.control.whistle
+        match: \b(export|function|return|if|while|loop|break|continue|var|val)\b
+      - name: keyword.control.import.whistle
+        match: \b(import|from)\b
+  strings:
+    patterns:
+      - include: "#double"
+      - include: "#single"
+    repository:
+      double:
+        name: string.quoted.double.whistle
+        begin: '"'
+        end: '"'
+        patterns:
+          - { name: constant.character.escape.whistle, match: \\. }
+      single:
+        name: string.quoted.single.whistle
+        begin: "'"
+        end: "'"
+        patterns:
+          - { name: constant.character.escape.whistle, match: \\. }
