@@ -7,7 +7,7 @@ repository:
   keywords:
     patterns:
       - name: keyword.control.whistle
-        match: \b(export|function|return|if|while|loop|break|continue|var|val)\b
+        match: \b(export|fun|return|if|while|loop|break|continue|var|val)\b
       - name: keyword.control.import.whistle
         match: \b(import|from)\b
   strings:
