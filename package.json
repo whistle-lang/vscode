@@ -1,6 +1,7 @@
 {
   "name": "whistle-lang",
   "displayName": "Whistle Lang",
+  "publisher":"whistle",
   "description": "Support for the whistle language",
   "version": "0.0.1",
   "engines": {
