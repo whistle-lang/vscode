@@ -27,3 +27,11 @@ repository:
         end: "'"
         patterns:
           - { name: constant.character.escape.whistle, match: \\. }
+  paren-expression:
+    begin: "\\("
+    end: "\\)"
+    name: expression.group.whistle
+    patterns:
+      - include: "#keywords"
+      - include: "#strings" 
+
