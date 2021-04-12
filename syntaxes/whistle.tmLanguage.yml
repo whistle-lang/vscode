@@ -3,6 +3,7 @@ scopeName: source.whistle
 patterns:
   - include: "#keywords"
   - include: "#strings"
+  - include: "#comments"
 repository:
   keywords:
     patterns:
@@ -10,6 +11,8 @@ repository:
         match: \b(export|fun|return|if|while|loop|break|continue|var|val)\b
       - name: keyword.control.import.whistle
         match: \b(import|from)\b
+      - name: keyword.control.type.whistle
+        match: "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(i32|i64|f32|f64|string|char|bool|none)(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))"
   strings:
     patterns:
       - include: "#double"
@@ -27,11 +30,39 @@ repository:
         end: "'"
         patterns:
           - { name: constant.character.escape.whistle, match: \\. }
-  paren-expression:
-    begin: "\\("
-    end: "\\)"
-    name: expression.group.whistle
+  comments:
     patterns:
-      - include: "#keywords"
-      - include: "#strings" 
+      - include: "#block"
+      - include: "#single-line"
+    repository:
+      block:
+        name: comment.block.whistle
+        begin: "(/\\*)(?:\\s*((@)internal)(?=\\s|(\\*/)))?"
+        beginCaptures:
+          "1":
+            name: punctuation.definition.comment.whistle
+          "2":
+            name: storage.type.internaldeclaration.whistle
+          "3":
+            name: punctuation.decorator.internaldeclaration.whistle
+
+        end: "\\*/"
+        endCaptures:
+          "0":
+            name: punctuation.definition.comment.whistle
+      single-line:
+        name: comment.singleline.whistle
+        begin: "(^[ \\t]+)?((//)(?:\\s*((@)internal)(?=\\s|$))?)"
+        beginCaptures: 
+          "1":
+            name: punctuation.whitespace.comment.leading.whistle
+          "2":
+            name: comment.line.double-slash.whistle
+          "3":
+            name: punctuation.definition.comment.whistle
+          "4":
+            name: storage.type.internaldeclaration.whistle
+          "5":
+            name: punctuation.decorator.internaldeclaration.whistle
+        end: "(?=^)"
 
