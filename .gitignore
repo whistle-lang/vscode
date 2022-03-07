@@ -3,3 +3,9 @@ node_modules
 syntaxes/whistle.tmLanguage.json
 
 *.vsix
+
+yarn.lock
+
+package-lock.json
+
+.vscode

@@ -1,198 +1,623 @@
 name: Whistle
 scopeName: source.whistle
 patterns:
-  - include: "#keywords"
-  - include: "#operators"
-  - include: "#literals"
-  - include: "#strings"
+- comment: boxed slice literal
+  begin: "(<)(\\[)"
+  beginCaptures:
+    '1':
+      name: punctuation.brackets.angle.whistle
+    '2':
+      name: punctuation.brackets.square.whistle
+  end: ">"
+  endCaptures:
+    '0':
+      name: punctuation.brackets.angle.whistle
+  patterns:
+  - include: "#block-comments"
   - include: "#comments"
+  - include: "#gtypes"
+  - include: "#lvariables"
+  - include: "#lifetimes"
+  - include: "#punctuation"
+  - include: "#types"
+- comment: macro type metavariables
+  name: meta.macro.metavariable.type.whistle
+  match: "(\\$)((crate)|([A-Z][A-Za-z0-9_]*))((:)(block|expr|ident|item|lifetime|literal|meta|path?|stmt|tt|ty|vis))?"
+  captures:
+    '1':
+      name: keyword.operator.macro.dollar.whistle
+    '3':
+      name: keyword.other.crate.whistle
+    '4':
+      name: entity.name.type.metavariable.whistle
+    '6':
+      name: keyword.operator.key-value.whistle
+    '7':
+      name: variable.other.metavariable.specifier.whistle
+  patterns:
+  - include: "#keywords"
+- comment: macro metavariables
+  name: meta.macro.metavariable.whistle
+  match: "(\\$)([a-z][A-Za-z0-9_]*)((:)(block|expr|ident|item|lifetime|literal|meta|path?|stmt|tt|ty|vis))?"
+  captures:
+    '1':
+      name: keyword.operator.macro.dollar.whistle
+    '2':
+      name: variable.other.metavariable.name.whistle
+    '4':
+      name: keyword.operator.key-value.whistle
+    '5':
+      name: variable.other.metavariable.specifier.whistle
+  patterns:
+  - include: "#keywords"
+- comment: macro rules
+  name: meta.macro.rules.whistle
+  match: "\\b(macro_rules!)\\s+(([a-z0-9_]+)|([A-Z][a-z0-9_]*))\\s+(\\{)"
+  captures:
+    '1':
+      name: entity.name.function.macro.rules.whistle
+    '3':
+      name: entity.name.function.macro.whistle
+    '4':
+      name: entity.name.type.macro.whistle
+    '5':
+      name: punctuation.brackets.curly.whistle
+- comment: attributes
+  name: meta.attribute.whistle
+  begin: "(#)(\\!?)(\\[)"
+  beginCaptures:
+    '1':
+      name: punctuation.definition.attribute.whistle
+    '2':
+      name: keyword.operator.attribute.inner.whistle
+    '3':
+      name: punctuation.brackets.attribute.whistle
+  end: "\\]"
+  endCaptures:
+    '0':
+      name: punctuation.brackets.attribute.whistle
+  patterns:
+  - include: "#block-comments"
+  - include: "#comments"
+  - include: "#keywords"
+  - include: "#lifetimes"
+  - include: "#punctuation"
+  - include: "#strings"
+  - include: "#gtypes"
+  - include: "#types"
+- comment: modules
+  match: "(mod)\\s+((?:r#(?!crate|[Ss]elf|super))?[a-z][A-Za-z0-9_]*)"
+  captures:
+    '1':
+      name: storage.type.whistle
+    '2':
+      name: entity.name.module.whistle
+- comment: external crate imports
+  name: meta.import.whistle
+  begin: "\\b(extern)\\s+(crate)"
+  beginCaptures:
+    '1':
+      name: storage.type.whistle
+    '2':
+      name: keyword.other.crate.whistle
+  end: ";"
+  endCaptures:
+    '0':
+      name: punctuation.semi.whistle
+  patterns:
+  - include: "#block-comments"
+  - include: "#comments"
+  - include: "#keywords"
+  - include: "#punctuation"
+- comment: use statements
+  name: meta.use.whistle
+  begin: "\\b(use)\\s"
+  beginCaptures:
+    '1':
+      name: keyword.other.whistle
+  end: ";"
+  endCaptures:
+    '0':
+      name: punctuation.semi.whistle
+  patterns:
+  - include: "#block-comments"
+  - include: "#comments"
+  - include: "#keywords"
+  - include: "#namespaces"
+  - include: "#punctuation"
+  - include: "#types"
+  - include: "#lvariables"
+- include: "#block-comments"
+- include: "#comments"
+- include: "#lvariables"
+- include: "#constants"
+- include: "#gtypes"
+- include: "#functions"
+- include: "#types"
+- include: "#keywords"
+- include: "#lifetimes"
+- include: "#macros"
+- include: "#namespaces"
+- include: "#punctuation"
+- include: "#strings"
+- include: "#variables"
 repository:
-
-  keywords:
-    patterns:
-      - name: keyword.control.whistle
-        match: \b(export|fun|return|if|while|loop|break|continue|var|val)\b
-      - name: keyword.control.import.whistle
-        match: \b(import|from)\b
-      - name: keyword.control.type.whistle
-        match: "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(i32|i64|f32|f64|string|char|bool|none)(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))"
-  operators:
-    patterns: 
-      - name: keyword.operator.assignment.whistle
-        match: "="
-      - name: keyword.operator.expression.in.whistle
-        match: "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))in(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))(?!\\()"
-      - name: keyword.operator.assignment.compound.whistle  
-        match: "\\*=|(?<!\\()/=|%=|\\+=|\\-="
-      - name: keyword.operator.assignment.compound.bitwise.whistle
-        match: "\\&=|\\^=|<<=|>>=|>>>=|\\|="
-      - name: keyword.operator.bitwise.shift.whistle
-        match: "<<|>>>|>>"
-      - name: keyword.operator.comparison.whistle
-        match: "<=|>=|<>|<|>|==|!="
-      - name: keyword.operator.logical.whistle
-        match: "\\!|&&|\\|\\||\\?\\?"
-      - name: keyword.operator.bitwise.whistle
-        match: "\\&|~|\\^|\\|"
-      - name: keyword.operator.assignment.whistle
-        match: "\\="
-      - name: keyword.operator.arithmetic.whistle
-        match: "%|\\*|/|-|\\+"
-      - begin: "(?<=[_$[:alnum:])\\]])\\s*(?=(\\/\\*([^\\*]|(\\*[^\\/]))*\\*\\/\\s*)+(?:(/=)|(?:(/)(?![/*]))))"
-        end: "(?:(/=)|(?:(/)(?!\\*([^\\*]|(\\*[^\\/]))*\\*\\/)))"
-        endCaptures:
-          "1":
-            name: keyword.operator.assignment.compound.whistle
-          "2":
-            name: keyword.operator.arithmetic.whistle
-        patterns:
-          - include: "#comments"
-      - begin: "[&|]"
-        beginCaptures:
-          "0":
-            name: keyword.operator.type.whistle
-        end: "(?=\\S)"
-      - match: "(?<=[_$[:alnum:]])(\\!)\\s*(?:(/=)|(?:(/)(?![/*])))"
-        captures:
-            "1":
-              name: keyword.operator.logical.whistle
-            "2":
-              name: keyword.operator.assignment.compound.whistle
-            "3":
-              name: keyword.operator.arithmetic.whistle
-          
-      
-
-  literals:
-    patterns:
-      - include: "#boolean-literal"
-      - include: "#none-literal"
-      - include: "#numericConstant-literal"
-      - include: "#numeric-literal"
-    repository:
-      boolean-literal:
-        patterns:
-          - name: constant.language.boolean.true.whistle
-            match: "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))true(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))"
-          - name: constant.language.boolean.false.whistle
-            match: "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))false(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))"
-      none-literal:
-        name: constant.language.null.whistle
-        match: "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))none(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))"
-      numericConstant-literal:
-        patterns:
-          - name: constant.language.nan.whistle
-            match: "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))NaN(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))"
-          - name: constant.language.infinity.whistle
-            match: "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))Infinity(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))"
-      numeric-literal:
-        patterns:
-          - include: "#hex"
-          - include: "#binary"
-          - include: "#octal"
-          - include: "#decimal"
-        repository:
-          hex:
-            name: constant.numeric.hex.whistle
-            match: "\\b(?<!\\$)0(?:x|X)[0-9a-fA-F][0-9a-fA-F_]*(n)?\\b(?!\\$)"
-            captures:
-              "1":
-                name: storage.type.numeric.bigint.whistle
-          binary:
-            name: constant.numeric.binary.whistle
-            match: "\\b(?<!\\$)0(?:b|B)[01][01_]*(n)?\\b(?!\\$)"
-            captures:
-              "1":
-                name: storage.type.numeric.bigint.whistle
-          octal:
-            name: constant.numeric.octal.whistle
-            match: "\\b(?<!\\$)0(?:o|O)?[0-7][0-7_]*(n)?\\b(?!\\$)"
-            captures:
-              "1":
-                name: storage.type.numeric.bigint.whistle
-          decimal:
-            match: "(?x)\n(?<!\\$)(?:\n  (?:\\b[0-9][0-9_]*(\\.)[0-9][0-9_]*[eE][+-]?[0-9][0-9_]*(n)?\\b)| # 1.1E+3\n  (?:\\b[0-9][0-9_]*(\\.)[eE][+-]?[0-9][0-9_]*(n)?\\b)|             # 1.E+3\n  (?:\\B(\\.)[0-9][0-9_]*[eE][+-]?[0-9][0-9_]*(n)?\\b)|             # .1E+3\n  (?:\\b[0-9][0-9_]*[eE][+-]?[0-9][0-9_]*(n)?\\b)|                 # 1E+3\n  (?:\\b[0-9][0-9_]*(\\.)[0-9][0-9_]*(n)?\\b)|                      # 1.1\n  (?:\\b[0-9][0-9_]*(\\.)(n)?\\B)|                                  # 1.\n  (?:\\B(\\.)[0-9][0-9_]*(n)?\\b)|                                  # .1\n  (?:\\b[0-9][0-9_]*(n)?\\b(?!\\.))                                 # 1\n)(?!\\$)"
-            captures:
-              "0":
-                name: constant.numeric.decimal.whistle
-              "1":
-                name: meta.delimiter.decimal.period.whistle
-              "2":
-                name: storage.type.numeric.bigint.whistle
-              "3":
-                name: meta.delimiter.decimal.period.whistle
-              "4":
-                name: storage.type.numeric.bigint.whistle
-              "5":
-                name: meta.delimiter.decimal.period.whistle
-              "6":
-                name: storage.type.numeric.bigint.whistle
-              "7":
-                name: storage.type.numeric.bigint.whistle
-              "8":
-                name: meta.delimiter.decimal.period.whistle
-              "9":
-                name: storage.type.numeric.bigint.whistle
-              "10":
-                name: meta.delimiter.decimal.period.whistle
-              "11":
-                name: storage.type.numeric.bigint.whistle
-              "12":
-                name: meta.delimiter.decimal.period.whistle
-              "13":
-                name: storage.type.numeric.bigint.whistle
-              "14":
-                name: storage.type.numeric.bigint.whistle
-
-  strings:
-    patterns:
-      - include: "#double"
-      - include: "#single"
-    repository:
-      double:
-        name: string.quoted.double.whistle
-        begin: '"'
-        end: '"'
-        patterns:
-          - { name: constant.character.escape.whistle, match: \\. }
-      single:
-        name: string.quoted.single.whistle
-        begin: "'"
-        end: "'"
-        patterns:
-          - { name: constant.character.escape.whistle, match: \\. }
   comments:
     patterns:
-      - include: "#block"
-      - include: "#single-line"
-    repository:
-      block:
-        name: comment.block.whistle
-        begin: "(/\\*)(?:\\s*((@)internal)(?=\\s|(\\*/)))?"
-        beginCaptures:
-          "1":
-            name: punctuation.definition.comment.whistle
-          "2":
-            name: storage.type.internaldeclaration.whistle
-          "3":
-            name: punctuation.decorator.internaldeclaration.whistle
-
-        end: "\\*/"
-        endCaptures:
-          "0":
-            name: punctuation.definition.comment.whistle
-      single-line:
-        name: comment.singleline.whistle
-        begin: "(^[ \\t]+)?((//)(?:\\s*((@)internal)(?=\\s|$))?)"
-        beginCaptures:
-          "1":
-            name: punctuation.whitespace.comment.leading.whistle
-          "2":
-            name: comment.line.double-slash.whistle
-          "3":
-            name: punctuation.definition.comment.whistle
-          "4":
-            name: storage.type.internaldeclaration.whistle
-          "5":
-            name: punctuation.decorator.internaldeclaration.whistle
-        end: "(?=^)"
+    - comment: documentation comments
+      name: comment.line.documentation.whistle
+      match: "^\\s*///.*"
+    - comment: line comments
+      name: comment.line.double-slash.whistle
+      match: "\\s*//.*"
+  block-comments:
+    patterns:
+    - comment: empty block comments
+      name: comment.block.whistle
+      match: "/\\*\\*/"
+    - comment: block documentation comments
+      name: comment.block.documentation.whistle
+      begin: "/\\*\\*"
+      end: "\\*/"
+      patterns:
+      - include: "#block-comments"
+    - comment: block comments
+      name: comment.block.whistle
+      begin: "/\\*(?!\\*)"
+      end: "\\*/"
+      patterns:
+      - include: "#block-comments"
+  constants:
+    patterns:
+    - comment: ALL CAPS constants
+      name: constant.other.caps.whistle
+      match: "\\b[A-Z]{2}[A-Z0-9_]*\\b"
+    - comment: constant declarations
+      match: "\\b(const)\\s+([A-Z][A-Za-z0-9_]*)\\b"
+      captures:
+        '1':
+          name: storage.type.whistle
+        '2':
+          name: constant.other.caps.whistle
+    - comment: decimal integers and floats
+      name: constant.numeric.decimal.whistle
+      match: "\\b\\d[\\d_]*(\\.?)[\\d_]*(?:(E)([+-])([\\d_]+))?(f32|f64|i128|i16|i32|i64|i8|isize|u128|u16|u32|u64|u8|usize)?\\b"
+      captures:
+        '1':
+          name: punctuation.separator.dot.decimal.whistle
+        '2':
+          name: keyword.operator.exponent.whistle
+        '3':
+          name: keyword.operator.exponent.sign.whistle
+        '4':
+          name: constant.numeric.decimal.exponent.mantissa.whistle
+        '5':
+          name: entity.name.type.numeric.whistle
+    - comment: hexadecimal integers
+      name: constant.numeric.hex.whistle
+      match: "\\b0x[\\da-fA-F_]+(i128|i16|i32|i64|i8|isize|u128|u16|u32|u64|u8|usize)?\\b"
+      captures:
+        '1':
+          name: entity.name.type.numeric.whistle
+    - comment: octal integers
+      name: constant.numeric.oct.whistle
+      match: "\\b0o[0-7_]+(i128|i16|i32|i64|i8|isize|u128|u16|u32|u64|u8|usize)?\\b"
+      captures:
+        '1':
+          name: entity.name.type.numeric.whistle
+    - comment: binary integers
+      name: constant.numeric.bin.whistle
+      match: "\\b0b[01_]+(i128|i16|i32|i64|i8|isize|u128|u16|u32|u64|u8|usize)?\\b"
+      captures:
+        '1':
+          name: entity.name.type.numeric.whistle
+    - comment: booleans
+      name: constant.language.bool.whistle
+      match: "\\b(true|false)\\b"
+  escapes:
+    comment: 'escapes: ASCII, byte, Unicode, quote, regex'
+    name: constant.character.escape.whistle
+    match: "(\\\\)(?:(?:(x[0-7][0-7a-fA-F])|(u(\\{)[\\da-fA-F]{4,6}(\\}))|.))"
+    captures:
+      '1':
+        name: constant.character.escape.backslash.whistle
+      '2':
+        name: constant.character.escape.bit.whistle
+      '3':
+        name: constant.character.escape.unicode.whistle
+      '4':
+        name: constant.character.escape.unicode.punctuation.whistle
+      '5':
+        name: constant.character.escape.unicode.punctuation.whistle
+  functions:
+    patterns:
+    - comment: public as a function
+      match: "\\b(public)(\\()"
+      captures:
+        '1':
+          name: keyword.other.whistle
+        '2':
+          name: punctuation.brackets.round.whistle
+    - comment: function definition
+      name: meta.function.definition.whistle
+      begin: "\\b(fun)\\s+((?:r#(?!crate|[Ss]elf|super))?[A-Za-z0-9_]+)((\\()|(<))"
+      beginCaptures:
+        '1':
+          name: keyword.other.fun.whistle
+        '2':
+          name: entity.name.function.whistle
+        '4':
+          name: punctuation.brackets.round.whistle
+        '5':
+          name: punctuation.brackets.angle.whistle
+      end: "\\{|;"
+      endCaptures:
+        '0':
+          name: punctuation.brackets.curly.whistle
+      patterns:
+      - include: "#block-comments"
+      - include: "#comments"
+      - include: "#keywords"
+      - include: "#lvariables"
+      - include: "#constants"
+      - include: "#gtypes"
+      - include: "#functions"
+      - include: "#lifetimes"
+      - include: "#macros"
+      - include: "#namespaces"
+      - include: "#punctuation"
+      - include: "#strings"
+      - include: "#types"
+      - include: "#variables"
+    - comment: function/method calls, chaining
+      name: meta.function.call.whistle
+      begin: "((?:r#(?!crate|[Ss]elf|super))?[A-Za-z0-9_]+)(\\()"
+      beginCaptures:
+        '1':
+          name: entity.name.function.whistle
+        '2':
+          name: punctuation.brackets.round.whistle
+      end: "\\)"
+      endCaptures:
+        '0':
+          name: punctuation.brackets.round.whistle
+      patterns:
+      - include: "#block-comments"
+      - include: "#comments"
+      - include: "#keywords"
+      - include: "#lvariables"
+      - include: "#constants"
+      - include: "#gtypes"
+      - include: "#functions"
+      - include: "#lifetimes"
+      - include: "#macros"
+      - include: "#namespaces"
+      - include: "#punctuation"
+      - include: "#strings"
+      - include: "#types"
+      - include: "#variables"
+    - comment: function/method calls with turbofish
+      name: meta.function.call.whistle
+      begin: "((?:r#(?!crate|[Ss]elf|super))?[A-Za-z0-9_]+)(?=::<.*>\\()"
+      beginCaptures:
+        '1':
+          name: entity.name.function.whistle
+      end: "\\)"
+      endCaptures:
+        '0':
+          name: punctuation.brackets.round.whistle
+      patterns:
+      - include: "#block-comments"
+      - include: "#comments"
+      - include: "#keywords"
+      - include: "#lvariables"
+      - include: "#constants"
+      - include: "#gtypes"
+      - include: "#functions"
+      - include: "#lifetimes"
+      - include: "#macros"
+      - include: "#namespaces"
+      - include: "#punctuation"
+      - include: "#strings"
+      - include: "#types"
+      - include: "#variables"
+  keywords:
+    patterns:
+    - comment: control flow keywords
+      name: keyword.control.whistle
+      match: "\\b(await|break|continue|do|else|for|if|loop|match|return|try|while|yield)\\b"
+    - comment: storage keywords
+      name: keyword.other.whistle storage.type.whistle
+      match: "\\b(extern|let|var|val|macro|mod)\\b"
+    - comment: const keyword
+      name: storage.modifier.whistle
+      match: "\\b(const)\\b"
+    - comment: type keyword
+      name: keyword.declaration.type.whistle storage.type.whistle
+      match: "\\b(type)\\b"
+    - comment: enum keyword
+      name: keyword.declaration.enum.whistle storage.type.whistle
+      match: "\\b(enum)\\b"
+    - comment: trait keyword
+      name: keyword.declaration.trait.whistle storage.type.whistle
+      match: "\\b(trait)\\b"
+    - comment: struct keyword
+      name: keyword.declaration.struct.whistle storage.type.whistle
+      match: "\\b(struct)\\b"
+    - comment: storage modifiers
+      name: storage.modifier.whistle
+      match: "\\b(abstract|static)\\b"
+    - comment: other keywords
+      name: keyword.other.whistle
+      match: "\\b(as|async|import|export|from|become|box|dyn|move|final|impl|in|override|private|public|ref|typeof|union|unsafe|unsized|use|virtual|where)\\b"
+    - comment: fun
+      name: keyword.other.fun.whistle
+      match: "\\bfun\\b"
+    - comment: crate
+      name: keyword.other.crate.whistle
+      match: "\\bcrate\\b"
+    - comment: mut
+      name: storage.modifier.mut.whistle
+      match: "\\bmut\\b"
+    - comment: logical operators
+      name: keyword.operator.logical.whistle
+      match: "(\\^|\\||\\|\\||&&|<<|>>|!)(?!=)"
+    - comment: logical AND, borrow references
+      name: keyword.operator.borrow.and.whistle
+      match: "&(?![&=])"
+    - comment: assignment operators
+      name: keyword.operator.assignment.whistle
+      match: "(\\+=|-=|\\*=|/=|%=|\\^=|&=|\\|=|<<=|>>=)"
+    - comment: single equal
+      name: keyword.operator.assignment.equal.whistle
+      match: "(?<![<>])=(?!=|>)"
+    - comment: comparison operators
+      name: keyword.operator.comparison.whistle
+      match: "(=(=)?(?!>)|!=|<=|(?<!=)>=)"
+    - comment: math operators
+      name: keyword.operator.math.whistle
+      match: "(([+%]|(\\*(?!\\w)))(?!=))|(-(?!>))|(/(?!/))"
+    - comment: less than, greater than (special case)
+      match: "(?:\\b|(?:(\\))|(\\])|(\\})))[ \\t]+([<>])[ \\t]+(?:\\b|(?:(\\()|(\\[)|(\\{)))"
+      captures:
+        '1':
+          name: punctuation.brackets.round.whistle
+        '2':
+          name: punctuation.brackets.square.whistle
+        '3':
+          name: punctuation.brackets.curly.whistle
+        '4':
+          name: keyword.operator.comparison.whistle
+        '5':
+          name: punctuation.brackets.round.whistle
+        '6':
+          name: punctuation.brackets.square.whistle
+        '7':
+          name: punctuation.brackets.curly.whistle
+    - comment: namespace operator
+      name: keyword.operator.namespace.whistle
+      match: "::"
+    - comment: dereference asterisk
+      match: "(\\*)(?=\\w+)"
+      captures:
+        '1':
+          name: keyword.operator.dereference.whistle
+    - comment: subpattern binding
+      name: keyword.operator.subpattern.whistle
+      match: "@"
+    - comment: dot access
+      name: keyword.operator.access.dot.whistle
+      match: "\\.(?!\\.)"
+    - comment: ranges, range patterns
+      name: keyword.operator.range.whistle
+      match: "\\.{2}(=|\\.)?"
+    - comment: colon
+      name: keyword.operator.key-value.whistle
+      match: ":(?!:)"
+    - comment: dashrocket, skinny arrow
+      name: keyword.operator.arrow.skinny.whistle
+      match: "->"
+    - comment: hashrocket, fat arrow
+      name: keyword.operator.arrow.fat.whistle
+      match: "=>"
+    - comment: dollar macros
+      name: keyword.operator.macro.dollar.whistle
+      match: "\\$"
+    - comment: question mark operator, questionably sized, macro kleene matcher
+      name: keyword.operator.question.whistle
+      match: "\\?"
+  interpolations:
+    comment: curly brace interpolations
+    name: meta.interpolation.whistle
+    match: ({)[^"{}]*(})
+    captures:
+      '1':
+        name: punctuation.definition.interpolation.whistle
+      '2':
+        name: punctuation.definition.interpolation.whistle
+  lifetimes:
+    patterns:
+    - comment: named lifetime parameters
+      match: "(['])([a-zA-Z_][0-9a-zA-Z_]*)(?!['])\\b"
+      captures:
+        '1':
+          name: punctuation.definition.lifetime.whistle
+        '2':
+          name: entity.name.type.lifetime.whistle
+    - comment: borrowing references to named lifetimes
+      match: "(\\&)(['])([a-zA-Z_][0-9a-zA-Z_]*)(?!['])\\b"
+      captures:
+        '1':
+          name: keyword.operator.borrow.whistle
+        '2':
+          name: punctuation.definition.lifetime.whistle
+        '3':
+          name: entity.name.type.lifetime.whistle
+  macros:
+    patterns:
+    - comment: macros
+      name: meta.macro.whistle
+      match: "(([a-z_][A-Za-z0-9_]*!)|([A-Z_][A-Za-z0-9_]*!))"
+      captures:
+        '2':
+          name: entity.name.function.macro.whistle
+        '3':
+          name: entity.name.type.macro.whistle
+  namespaces:
+    patterns:
+    - comment: namespace (non-type, non-function path segment)
+      match: "(?<![A-Za-z0-9_])([a-z0-9_]+)((?<!super|self)::)"
+      captures:
+        '1':
+          name: entity.name.namespace.whistle
+        '2':
+          name: keyword.operator.namespace.whistle
+  types:
+    patterns:
+    - comment: numeric types
+      match: "(?<![A-Za-z])(f32|f64|i128|i16|i32|i64|i8|isize|u128|u16|u32|u64|u8|usize)\\b"
+      captures:
+        '1':
+          name: entity.name.type.numeric.whistle
+    - comment: parameterized types
+      begin: "\\b([A-Z][A-Za-z0-9]*)(<)"
+      beginCaptures:
+        '1':
+          name: entity.name.type.whistle
+        '2':
+          name: punctuation.brackets.angle.whistle
+      end: ">"
+      endCaptures:
+        '0':
+          name: punctuation.brackets.angle.whistle
+      patterns:
+      - include: "#block-comments"
+      - include: "#comments"
+      - include: "#keywords"
+      - include: "#lvariables"
+      - include: "#lifetimes"
+      - include: "#punctuation"
+      - include: "#types"
+      - include: "#variables"
+    - comment: primitive types
+      name: entity.name.type.primitive.whistle
+      match: "\\b(bool|char|str)\\b"
+    - comment: trait declarations
+      match: "\\b(trait)\\s+([A-Z][A-Za-z0-9]*)\\b"
+      captures:
+        '1':
+          name: keyword.declaration.trait.whistle storage.type.whistle
+        '2':
+          name: entity.name.type.trait.whistle
+    - comment: struct declarations
+      match: "\\b(struct)\\s+([A-Z][A-Za-z0-9]*)\\b"
+      captures:
+        '1':
+          name: keyword.declaration.struct.whistle storage.type.whistle
+        '2':
+          name: entity.name.type.struct.whistle
+    - comment: enum declarations
+      match: "\\b(enum)\\s+([A-Z][A-Za-z0-9_]*)\\b"
+      captures:
+        '1':
+          name: keyword.declaration.enum.whistle storage.type.whistle
+        '2':
+          name: entity.name.type.enum.whistle
+    - comment: type declarations
+      match: "\\b(type)\\s+([A-Z][A-Za-z0-9_]*)\\b"
+      captures:
+        '1':
+          name: keyword.declaration.type.whistle storage.type.whistle
+        '2':
+          name: entity.name.type.declaration.whistle
+    - comment: types
+      name: entity.name.type.whistle
+      match: "\\b[A-Z][A-Za-z0-9]*\\b(?!!)"
+  gtypes:
+    patterns:
+    - comment: option types
+      name: entity.name.type.option.whistle
+      match: "\\b(Some|None)\\b"
+    - comment: result types
+      name: entity.name.type.result.whistle
+      match: "\\b(Ok|Err)\\b"
+  punctuation:
+    patterns:
+    - comment: comma
+      name: punctuation.comma.whistle
+      match: ","
+    - comment: curly braces
+      name: punctuation.brackets.curly.whistle
+      match: "[{}]"
+    - comment: parentheses, round brackets
+      name: punctuation.brackets.round.whistle
+      match: "[()]"
+    - comment: semicolon
+      name: punctuation.semi.whistle
+      match: ";"
+    - comment: square brackets
+      name: punctuation.brackets.square.whistle
+      match: "[\\[\\]]"
+    - comment: angle brackets
+      name: punctuation.brackets.angle.whistle
+      match: "(?<!=)[<>]"
+  strings:
+    patterns:
+    - comment: double-quoted strings and byte strings
+      name: string.quoted.double.whistle
+      begin: (b?)(")
+      beginCaptures:
+        '1':
+          name: string.quoted.byte.raw.whistle
+        '2':
+          name: punctuation.definition.string.whistle
+      end: "\""
+      endCaptures:
+        '0':
+          name: punctuation.definition.string.whistle
+      patterns:
+      - include: "#escapes"
+      - include: "#interpolations"
+    - comment: double-quoted raw strings and raw byte strings
+      name: string.quoted.double.whistle
+      begin: (b?r)(#*)(")
+      beginCaptures:
+        '1':
+          name: string.quoted.byte.raw.whistle
+        '2':
+          name: punctuation.definition.string.raw.whistle
+        '3':
+          name: punctuation.definition.string.whistle
+      end: (")(\2)
+      endCaptures:
+        '1':
+          name: punctuation.definition.string.whistle
+        '2':
+          name: punctuation.definition.string.raw.whistle
+    - comment: characters and bytes
+      name: string.quoted.single.char.whistle
+      begin: "(b)?(')"
+      beginCaptures:
+        '1':
+          name: string.quoted.byte.raw.whistle
+        '2':
+          name: punctuation.definition.char.whistle
+      end: "'"
+      endCaptures:
+        '0':
+          name: punctuation.definition.char.whistle
+      patterns:
+      - include: "#escapes"
+  lvariables:
+    patterns:
+    - comment: self
+      name: variable.language.self.whistle
+      match: "\\b[Ss]elf\\b"
+    - comment: super
+      name: variable.language.super.whistle
+      match: "\\bsuper\\b"
+  variables:
+    patterns:
+    - comment: variables
+      name: variable.other.whistle
+      match: "\\b(?<!(?<!\\.)\\.)(?:r#(?!(crate|[Ss]elf|super)))?[a-z0-9_]+\\b"
