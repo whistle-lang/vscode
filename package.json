@@ -16,6 +16,10 @@
   "categories": [
     "Programming Languages"
   ],
+  "activationEvents": [
+		"onLanguage:whistle"
+	],
+  "main": "",
   "contributes": {
     "snippets": [
       {
@@ -31,7 +35,7 @@
           "whistle"
         ],
         "extensions": [
-          "whi"
+          ".whi"
         ],
         "configuration": "./language-configuration.json"
       }
