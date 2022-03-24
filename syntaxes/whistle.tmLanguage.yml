@@ -240,7 +240,7 @@ repository:
           name: punctuation.brackets.round.whistle
     - comment: function definition
       name: meta.function.definition.whistle
-      begin: "\\b(fun)\\s+((?:r#(?!crate|[Ss]elf|super))?[A-Za-z0-9_]+)((\\()|(<))"
+      begin: "\\b(fn)\\s+((?:r#(?!crate|[Ss]elf|super))?[A-Za-z0-9_]+)((\\()|(<))"
       beginCaptures:
         '1':
           name: keyword.other.fun.whistle
@@ -352,7 +352,7 @@ repository:
       match: "\\b(as|async|import|export|from|become|box|dyn|move|final|impl|in|override|private|public|ref|typeof|union|unsafe|unsized|use|virtual|where)\\b"
     - comment: fun
       name: keyword.other.fun.whistle
-      match: "\\bfun\\b"
+      match: "\\bfn\\b"
     - comment: crate
       name: keyword.other.crate.whistle
       match: "\\bcrate\\b"

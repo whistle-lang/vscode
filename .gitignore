@@ -1,6 +1,7 @@
 node_modules
 
 syntaxes/whistle.tmLanguage.json
+snippets/whistle.json
 
 *.vsix
 

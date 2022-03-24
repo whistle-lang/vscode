@@ -5,7 +5,7 @@
   "publisher": "whistle",
   "icon": "icons/icon128.png",
   "description": "Support for the whistle language",
-  "version": "1.6.1",
+  "version": "1.7.0",
   "engines": {
     "vscode": "^1.47.0"
   },
@@ -17,6 +17,12 @@
     "Programming Languages"
   ],
   "contributes": {
+    "snippets": [
+      {
+        "language": "whistle",
+        "path": "snippets/whistle.json"
+      }
+    ],
     "languages": [
       {
         "id": "whistle",
@@ -43,7 +49,7 @@
     "vsce": "^1.87.1"
   },
   "scripts": {
-    "build": "js-yaml syntaxes/whistle.tmLanguage.yml > syntaxes/whistle.tmLanguage.json",
+    "build": "js-yaml syntaxes/whistle.tmLanguage.yml > syntaxes/whistle.tmLanguage.json && js-yaml snippets/whistle.yml > snippets/whistle.json",
     "package": "vsce package",
     "package:npm": "vsce package --no-yarn"
   }
