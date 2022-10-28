@@ -1,15 +1,20 @@
 ---
 Import external module:
-  prefix: import statement
+  prefix: import
   body:
   - import { $0 } from "${1:module}"
   description: Import external module.
-Print string to the console:
-  prefix: pstr
+Use builtin:
+  prefix: builtin
   body:
-  - printString($1)
+  - builtin @$0 { $1 }
+  description: Use a builtin function
+Print line to the console:
+  prefix: pln
+  body:
+  - println($1)
   - "$0"
-  description: Print string to the console
+  description: Print line to the console
 Print int to the console:
   prefix: pint
   body:

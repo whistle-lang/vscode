@@ -349,7 +349,7 @@ repository:
       match: "\\b(abstract|static)\\b"
     - comment: other keywords
       name: keyword.other.whistle
-      match: "\\b(as|async|import|export|from|become|box|dyn|move|final|impl|in|override|private|public|ref|typeof|union|unsafe|unsized|use|virtual|where)\\b"
+      match: "\\b(as|inline|async|import|export|builtin|from|become|box|dyn|move|final|impl|in|override|private|public|ref|typeof|union|unsafe|unsized|use|virtual|where)\\b"
     - comment: fun
       name: keyword.other.fun.whistle
       match: "\\bfn\\b"
