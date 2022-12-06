@@ -1,0 +1,1 @@
+export const extensionContext = {} as any;
