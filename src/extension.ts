@@ -1,80 +1,151 @@
-import * as vscode from "vscode";
-// import { workspace } from "vscode";
-import { handleDocumentOpen } from "./commands";
-import { extensionContext } from "./context";
-// import {
-//   LanguageClient,
-//   LanguageClientOptions,
-//   ServerOptions,
-//   TransportKind,
-// } from "vscode-languageclient/node";
+// deno-lint-ignore-file require-await no-explicit-any no-unused-vars
+import {
+  languages,
+  workspace,
+  EventEmitter,
+  ExtensionContext,
+  window,
+  InlayHintsProvider,
+  TextDocument,
+  CancellationToken,
+  Range,
+  InlayHint,
+  TextDocumentChangeEvent,
+  ProviderResult,
+  commands,
+  WorkspaceEdit,
+  TextEdit,
+  Selection,
+  Uri,
+} from "vscode";
 
-// let client!: LanguageClient;
-export let buildDiagnosticCollection: vscode.DiagnosticCollection;
-export const logChannel = vscode.window.createOutputChannel('Whistle');
-export const whistleFormatStatusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
+import {
+  Disposable,
+  Executable,
+  LanguageClient,
+  LanguageClientOptions,
+  ServerOptions,
+} from "vscode-languageclient/node";
 
-export async function activate(context: vscode.ExtensionContext) {
-  await vscode.window.showInformationMessage(
+let client: LanguageClient;
+
+
+export async function activate(context: ExtensionContext) {
+  const disposable = commands.registerCommand("helloworld.helloWorld", async (_uri: any) => {
+    const editor = window.activeTextEditor;
+    const range = new Range(1, 1, 1, 1)
+    editor.selection = new Selection(range.start, range.end);
+  });
+
+  context.subscriptions.push(disposable);
+  const traceOutputChannel = window.createOutputChannel("Whistle Language Server trace");
+  const command = "whistle_lsp";
+  const run: Executable = {
+    command,
+    options: {
+      env: {
+        ...process.env,
+        RUST_LOG: "debug",
+      },
+    },
+  };
+  const serverOptions: ServerOptions = {
+    run,
+    debug: run,
+  };
+  const clientOptions: LanguageClientOptions = {
+    documentSelector: [{ scheme: "file", language: "whistle" }],
+    synchronize: {
+      fileEvents: workspace.createFileSystemWatcher("**/.clientrc"),
+    },
+    traceOutputChannel,
+  };
+
+  client = new LanguageClient("whistle-language-server", "whistle language server", serverOptions, clientOptions);
+  activateInlayHints(context);
+  client.start();
+  await window.showInformationMessage(
     "Whistle is now setup in this workspace.",
-  );
-
-  context.subscriptions.push(logChannel);
-  buildDiagnosticCollection = vscode.languages.createDiagnosticCollection('whistle');
-  context.subscriptions.push(buildDiagnosticCollection);
-  
-  // client = createLanguageClient();
-  // client.start();
-  // on document open
-  vscode.workspace.onDidOpenTextDocument(
-    handleDocumentOpen,
-    extensionContext,
-    context.subscriptions,
-  );
-
-  context.subscriptions.push(
-    vscode.commands.registerCommand("whistle.build.workspace", () =>
-      console.log("build")),
-  );
-  context.subscriptions.push(
-    vscode.commands.registerCommand("whistle.format.file", () =>
-      console.log("test")),
   );
 }
 
 export function deactivate() {
-  // if (!client) {
-  //   return undefined;
-  // }
-  // return client.stop();
+  if (!client) {
+    return undefined;
+  }
+  return client.stop();
 }
 
-// function createLanguageClient(): LanguageClient {
-//   const clientOptions: LanguageClientOptions = {
-//     documentSelector: [{ scheme: "file", language: "whistle" }],
-//     synchronize: {
-//       fileEvents: [
-//         workspace.createFileSystemWatcher("**/whistle.yml"),
-//       ],
-//     },
-//   };
+export function activateInlayHints(ctx: ExtensionContext) {
+  const maybeUpdater = {
+    hintsProvider: null as Disposable | null,
+    updateHintsEventEmitter: new EventEmitter<void>(),
 
-//   const serverOptions: ServerOptions = {
-//     command: "whistle",
-//     args: ["lsp"],
-//     transport: TransportKind.stdio,
-//     options: {
-//       env: Object.assign(process.env, {
-//         WHISTLE_LOG: "info",
-//         WHISTLE_LOG_NOCOLOUR: "1",
-//       }),
-//     },
-//   };
+    async onConfigChange() {
+      this.dispose();
 
-//   return new LanguageClient(
-//     "whistle_language_server",
-//     "Whistle Language Server",
-//     serverOptions,
-//     clientOptions,
-//   );
-// }
+      const event = this.updateHintsEventEmitter.event;
+      this.hintsProvider = languages.registerInlayHintsProvider(
+        { scheme: "file", language: "nrs" },
+        new (class implements InlayHintsProvider {
+          onDidChangeInlayHints = event;
+          resolveInlayHint(hint: InlayHint, _token: CancellationToken): ProviderResult<InlayHint> {
+            const ret = {
+              label: hint.label,
+              ...hint,
+            };
+            return ret;
+          }
+          async provideInlayHints(
+            document: TextDocument,
+            _range: Range,
+            _token: CancellationToken
+          ): Promise<InlayHint[]> {
+            const hints = (await client
+              .sendRequest("custom/inlay_hint", { path: document.uri.toString() })
+              .catch((_err: unknown) => null)) as [number, number, string][];
+            if (hints == null) {
+              return [];
+            } else {
+              return hints.map(item => {
+                const [start, end, label] = item;
+                const _startPosition = document.positionAt(start);
+                const endPosition = document.positionAt(end);
+                return {
+                  position: endPosition,
+                  paddingLeft: true,
+                  label: [
+                    {
+                      value: `${label}`,
+                      command: {
+                        title: "hello world",
+                        command: "helloworld.helloWorld",
+                        arguments: [document.uri],
+                      },
+                    },
+                  ],
+                };
+              });
+            }
+          }
+        })()
+      );
+    },
+
+    onDidChangeTextDocument({ contentChanges, document }: TextDocumentChangeEvent) {
+      // debugger
+      // this.updateHintsEventEmitter.fire();
+    },
+
+    dispose() {
+      this.hintsProvider?.dispose();
+      this.hintsProvider = null;
+      this.updateHintsEventEmitter.dispose();
+    },
+  };
+
+  workspace.onDidChangeConfiguration(maybeUpdater.onConfigChange, maybeUpdater, ctx.subscriptions);
+  workspace.onDidChangeTextDocument(maybeUpdater.onDidChangeTextDocument, maybeUpdater, ctx.subscriptions);
+
+  maybeUpdater.onConfigChange().catch(console.error);
+}

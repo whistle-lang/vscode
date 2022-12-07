@@ -5,7 +5,7 @@
   "publisher": "whistle",
   "icon": "icons/icon128.png",
   "description": "Support for the whistle language",
-  "version": "1.7.6",
+  "version": "1.8.1",
   "engines": {
     "vscode": "^1.67.0"
   },
@@ -36,6 +36,28 @@
         "configuration": "./language-configuration.json"
       }
     ],
+    "configuration": {
+      "type": "object",
+      "title": "whistle-language-server",
+      "properties": {
+        "whistle-language-server.trace.server": {
+          "type": "string",
+          "scope": "window",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "enumDescriptions": [
+            "No traces",
+            "Error only",
+            "Full log"
+          ],
+          "default": "off",
+          "description": "Traces the communication between VS Code and the language server."
+        }
+      }
+    },
     "grammars": [
       {
         "language": "whistle",
@@ -43,24 +65,13 @@
         "path": "./syntaxes/whistle.tmLanguage.json"
       }
     ],
-    "commands": [
-      {
-        "command": "whistle.build.workspace",
-        "title": "Whistle: Build Workspace",
-        "description": "Build the current project using 'whistle compile'"
-      },
-      {
-        "command": "whistle.format.file",
-        "title": "Whistle: Format File",
-        "description": "Formats the current whistle file"
-      }
-    ]
+    "commands": []
   },
   "activationEvents": [
     "onLanguage:whistle",
-    "onDebugInitialConfigurations",
-    "onCommand:whistle.format.file"
+    "onDebugInitialConfigurations"
   ],
+  "enabledApiProposals": [],
   "main": "./out/extension",
   "devDependencies": {
     "@types/mocha": "^2.2.48",
