@@ -1,22 +1,22 @@
 // deno-lint-ignore-file require-await no-explicit-any no-unused-vars
 import {
-  languages,
-  workspace,
+  CancellationToken,
+  commands,
   EventEmitter,
   ExtensionContext,
-  window,
-  InlayHintsProvider,
-  TextDocument,
-  CancellationToken,
-  Range,
   InlayHint,
-  TextDocumentChangeEvent,
+  InlayHintsProvider,
+  languages,
   ProviderResult,
-  commands,
-  WorkspaceEdit,
-  TextEdit,
+  Range,
   Selection,
+  TextDocument,
+  TextDocumentChangeEvent,
+  TextEdit,
   Uri,
+  window,
+  workspace,
+  WorkspaceEdit,
 } from "vscode";
 
 import {
@@ -29,16 +29,20 @@ import {
 
 let client: LanguageClient;
 
-
 export async function activate(context: ExtensionContext) {
-  const disposable = commands.registerCommand("helloworld.helloWorld", async (_uri: any) => {
-    const editor = window.activeTextEditor;
-    const range = new Range(1, 1, 1, 1)
-    editor.selection = new Selection(range.start, range.end);
-  });
+  const disposable = commands.registerCommand(
+    "helloworld.helloWorld",
+    async (_uri: any) => {
+      const editor = window.activeTextEditor;
+      const range = new Range(1, 1, 1, 1);
+      editor.selection = new Selection(range.start, range.end);
+    },
+  );
 
   context.subscriptions.push(disposable);
-  const traceOutputChannel = window.createOutputChannel("Whistle Language Server trace");
+  const traceOutputChannel = window.createOutputChannel(
+    "Whistle Language Server trace",
+  );
   const command = "whistle_lsp";
   const run: Executable = {
     command,
@@ -61,11 +65,16 @@ export async function activate(context: ExtensionContext) {
     traceOutputChannel,
   };
 
-  client = new LanguageClient("whistle-language-server", "whistle language server", serverOptions, clientOptions);
+  client = new LanguageClient(
+    "whistle-language-server",
+    "whistle language server",
+    serverOptions,
+    clientOptions,
+  );
   activateInlayHints(context);
   client.start();
   await window.showInformationMessage(
-    "Whistle is now setup in this workspace.",
+    "Whistle is now setup in this workspace ✨",
   );
 }
 
@@ -86,10 +95,13 @@ export function activateInlayHints(ctx: ExtensionContext) {
 
       const event = this.updateHintsEventEmitter.event;
       this.hintsProvider = languages.registerInlayHintsProvider(
-        { scheme: "file", language: "nrs" },
+        { scheme: "file", language: "whistle" },
         new (class implements InlayHintsProvider {
           onDidChangeInlayHints = event;
-          resolveInlayHint(hint: InlayHint, _token: CancellationToken): ProviderResult<InlayHint> {
+          resolveInlayHint(
+            hint: InlayHint,
+            _token: CancellationToken,
+          ): ProviderResult<InlayHint> {
             const ret = {
               label: hint.label,
               ...hint,
@@ -99,15 +111,17 @@ export function activateInlayHints(ctx: ExtensionContext) {
           async provideInlayHints(
             document: TextDocument,
             _range: Range,
-            _token: CancellationToken
+            _token: CancellationToken,
           ): Promise<InlayHint[]> {
             const hints = (await client
-              .sendRequest("custom/inlay_hint", { path: document.uri.toString() })
+              .sendRequest("custom/inlay_hint", {
+                path: document.uri.toString(),
+              })
               .catch((_err: unknown) => null)) as [number, number, string][];
             if (hints == null) {
               return [];
             } else {
-              return hints.map(item => {
+              return hints.map((item) => {
                 const [start, end, label] = item;
                 const _startPosition = document.positionAt(start);
                 const endPosition = document.positionAt(end);
@@ -128,12 +142,13 @@ export function activateInlayHints(ctx: ExtensionContext) {
               });
             }
           }
-        })()
+        })(),
       );
     },
 
-    onDidChangeTextDocument({ contentChanges, document }: TextDocumentChangeEvent) {
-      // debugger
+    onDidChangeTextDocument(
+      { contentChanges, document }: TextDocumentChangeEvent,
+    ) {
       // this.updateHintsEventEmitter.fire();
     },
 
@@ -144,8 +159,16 @@ export function activateInlayHints(ctx: ExtensionContext) {
     },
   };
 
-  workspace.onDidChangeConfiguration(maybeUpdater.onConfigChange, maybeUpdater, ctx.subscriptions);
-  workspace.onDidChangeTextDocument(maybeUpdater.onDidChangeTextDocument, maybeUpdater, ctx.subscriptions);
+  workspace.onDidChangeConfiguration(
+    maybeUpdater.onConfigChange,
+    maybeUpdater,
+    ctx.subscriptions,
+  );
+  workspace.onDidChangeTextDocument(
+    maybeUpdater.onDidChangeTextDocument,
+    maybeUpdater,
+    ctx.subscriptions,
+  );
 
   maybeUpdater.onConfigChange().catch(console.error);
 }
