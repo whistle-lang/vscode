@@ -6,7 +6,7 @@
   "icon": "icons/icon128.png",
   "license": "MIT",
   "description": "Support for the whistle language",
-  "version": "1.8.1",
+  "version": "1.8.2",
   "engines": {
     "vscode": "^1.67.0"
   },
@@ -86,7 +86,7 @@
     "@types/semver": "7.3.9",
     "@types/vscode": "1.67.0",
     "js-yaml": "^3.14.0",
-    "vsce": "^1.87.1",
+    "vsce": "^2.15.0",
     "vscode": "^1.0.1",
     "vscode-test": "^1.6.1"
   },
@@ -94,7 +94,6 @@
     "esbuild": "^0.12.1",
     "lodash-es": "^4.17.21",
     "lodash.debounce": "^4.0.8",
-    "vsce": "^2.11.0",
     "vscode-languageclient": "^8.0.2"
   },
   "scripts": {
