@@ -29,6 +29,7 @@ import {
 
 let client: LanguageClient;
 
+
 export async function activate(context: ExtensionContext) {
   const disposable = commands.registerCommand(
     "helloworld.helloWorld",
@@ -43,7 +44,7 @@ export async function activate(context: ExtensionContext) {
   const traceOutputChannel = window.createOutputChannel(
     "Whistle Language Server trace",
   );
-  const command = "whistle_lsp";
+  const command = workspace.getConfiguration("whistle").get("lspPath");
   const run: Executable = {
     command,
     options: {
@@ -73,9 +74,6 @@ export async function activate(context: ExtensionContext) {
   );
   activateInlayHints(context);
   client.start();
-  await window.showInformationMessage(
-    "Whistle is now setup in this workspace ✨",
-  );
 }
 
 export function deactivate() {

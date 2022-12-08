@@ -2,8 +2,9 @@
   "name": "whistle-lang",
   "displayName": "Whistle Lang",
   "author": "Whistle Team",
-  "publisher": "whistle",
+  "publisher": "whistle-lang",
   "icon": "icons/icon128.png",
+  "license": "MIT",
   "description": "Support for the whistle language",
   "version": "1.8.1",
   "engines": {
@@ -38,9 +39,9 @@
     ],
     "configuration": {
       "type": "object",
-      "title": "whistle-language-server",
+      "title": "whistle",
       "properties": {
-        "whistle-language-server.trace.server": {
+        "whistle.trace.server": {
           "type": "string",
           "scope": "window",
           "enum": [
@@ -55,6 +56,12 @@
           ],
           "default": "off",
           "description": "Traces the communication between VS Code and the language server."
+        },
+        "whistle.lspPath": {
+          "type": "string",
+          "default": "whistle_lsp",
+          "markdownDescription": "A path to the `whistle_lsp` executable. The extension looks for `whistle_lsp` in the `PATH` By default",
+          "scope": "window"
         }
       }
     },
