@@ -1,26 +1,9 @@
 ---
-Import external module:
+Import module:
   prefix: import
   body:
-  - import { $0 } from "${1:module}"
-  description: Import external module.
-Use builtin:
-  prefix: builtin
-  body:
-  - builtin @$0 { $1 }
-  description: Use a builtin function
-Print line to the console:
-  prefix: pln
-  body:
-  - println($1)
-  - "$0"
-  description: Print line to the console
-Print int to the console:
-  prefix: pint
-  body:
-  - printInt($1)
-  - "$0"
-  description: Print int to the console
+  - import from "${0:module}"
+  description: Import a whistle file.
 Function Statement:
   prefix: fn
   body:
@@ -28,6 +11,13 @@ Function Statement:
   - "\t$TM_SELECTED_TEXT$0"
   - "}"
   description: Function Statement
+Extern module:
+  prefix: extern
+  body:
+  - extern "${0:namespace}" {
+  - "\tfn ${1:name}(${2:params}:${3:type}):${4:return_type},"
+  - "}"
+  description: Import an external function 
 If Statement:
   prefix: if
   body:
