@@ -29,24 +29,12 @@ import {
 
 let client: LanguageClient;
 
-
-export async function activate(context: ExtensionContext) {
-  const disposable = commands.registerCommand(
-    "helloworld.helloWorld",
-    async (_uri: any) => {
-      const editor = window.activeTextEditor;
-      const range = new Range(1, 1, 1, 1);
-      editor.selection = new Selection(range.start, range.end);
-    },
-  );
-
-  context.subscriptions.push(disposable);
-  const traceOutputChannel = window.createOutputChannel(
-    "Whistle Language Server trace",
-  );
-  const command = workspace.getConfiguration("whistle").get("lspPath");
+function createLanguageClient() {
+  const command = workspace.getConfiguration("whistle").get("whiskeyPath");
+  console.log(command);
   const run: Executable = {
     command,
+    args: ["lsp"],
     options: {
       env: {
         ...process.env,
@@ -63,24 +51,48 @@ export async function activate(context: ExtensionContext) {
     synchronize: {
       fileEvents: workspace.createFileSystemWatcher("**/.clientrc"),
     },
-    traceOutputChannel,
   };
 
-  client = new LanguageClient(
+  return new LanguageClient(
     "whistle-language-server",
     "whistle language server",
     serverOptions,
     clientOptions,
   );
+}
+
+export async function activate(context: ExtensionContext) {
+  const restartCommand = commands.registerCommand(
+    "whistle.restartServer",
+    async () => {
+      if (!client) {
+        window.showErrorMessage("whistle client not found");
+        return;
+      }
+
+      try {
+        if (client.isRunning()) {
+          await client.restart();
+
+          window.showInformationMessage("whistle server restarted.");
+        } else {
+          await client.start();
+        }
+      } catch (err) {
+        client.error("Restarting client failed", err, "force");
+      }
+    },
+  );
+
+  context.subscriptions.push(restartCommand);
+
+  client = createLanguageClient();
   activateInlayHints(context);
   client.start();
 }
 
 export function deactivate() {
-  if (!client) {
-    return undefined;
-  }
-  return client.stop();
+  return client?.stop();
 }
 
 export function activateInlayHints(ctx: ExtensionContext) {

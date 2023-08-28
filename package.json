@@ -57,10 +57,10 @@
           "default": "off",
           "description": "Traces the communication between VS Code and the language server."
         },
-        "whistle.lspPath": {
+        "whistle.whiskeyPath": {
           "type": "string",
-          "default": "whistle_lsp",
-          "markdownDescription": "A path to the `whistle_lsp` executable. The extension looks for `whistle_lsp` in the `PATH` By default",
+          "default": "whiskey",
+          "markdownDescription": "A path to the `whiskey` executable. The extension looks for `whistle_lsp` in the `PATH` By default",
           "scope": "window"
         }
       }
@@ -72,7 +72,13 @@
         "path": "./syntaxes/whistle.tmLanguage.json"
       }
     ],
-    "commands": []
+    "commands": [
+      {
+        "command": "whistle.restartServer",
+        "title": "Restart Whistle Server",
+        "category": "whistle"
+      }
+    ]
   },
   "activationEvents": [
     "onLanguage:whistle",
