@@ -2,11 +2,11 @@
   "name": "whistle-lang",
   "displayName": "Whistle Lang",
   "author": "Whistle Team",
-  "publisher": "whistle-lang",
+  "publisher": "whistle",
   "icon": "icons/icon128.png",
   "license": "MIT",
   "description": "Support for the whistle language",
-  "version": "1.8.2",
+  "version": "1.8.3",
   "engines": {
     "vscode": "^1.67.0"
   },
@@ -27,6 +27,10 @@
     "languages": [
       {
         "id": "whistle",
+        "icon": {
+          "light": "icons/icon_light.svg",
+          "dark": "icons/icon_dark.svg"
+        },
         "aliases": [
           "Whistle",
           "whistle"
@@ -57,10 +61,10 @@
           "default": "off",
           "description": "Traces the communication between VS Code and the language server."
         },
-        "whistle.whiskeyPath": {
+        "whistle.whistlePath": {
           "type": "string",
-          "default": "whiskey",
-          "markdownDescription": "A path to the `whiskey` executable. The extension looks for `whistle_lsp` in the `PATH` By default",
+          "default": "whistle",
+          "markdownDescription": "A path to the `whistle` executable. The extension looks for `whistle` in the `PATH` By default",
           "scope": "window"
         }
       }

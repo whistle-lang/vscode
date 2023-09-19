@@ -30,7 +30,7 @@ import {
 let client: LanguageClient;
 
 function createLanguageClient() {
-  const command = workspace.getConfiguration("whistle").get("whiskeyPath");
+  const command = workspace.getConfiguration("whistle").get("whistlePath");
   console.log(command);
   const run: Executable = {
     command,
