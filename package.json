@@ -4,10 +4,11 @@
   "author": "Whistle Team",
   "publisher": "whistle",
   "icon": "icons/icon128.png",
+  "license": "MIT",
   "description": "Support for the whistle language",
-  "version": "1.7.0",
+  "version": "1.8.3",
   "engines": {
-    "vscode": "^1.47.0"
+    "vscode": "^1.67.0"
   },
   "repository": {
     "type": "git",
@@ -26,31 +27,91 @@
     "languages": [
       {
         "id": "whistle",
+        "icon": {
+          "light": "icons/icon_light.svg",
+          "dark": "icons/icon_dark.svg"
+        },
         "aliases": [
           "Whistle",
           "whistle"
         ],
         "extensions": [
-          "whi"
+          ".whi"
         ],
         "configuration": "./language-configuration.json"
       }
     ],
+    "configuration": {
+      "type": "object",
+      "title": "whistle",
+      "properties": {
+        "whistle.trace.server": {
+          "type": "string",
+          "scope": "window",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "enumDescriptions": [
+            "No traces",
+            "Error only",
+            "Full log"
+          ],
+          "default": "off",
+          "description": "Traces the communication between VS Code and the language server."
+        },
+        "whistle.whistlePath": {
+          "type": "string",
+          "default": "whistle",
+          "markdownDescription": "A path to the `whistle` executable. The extension looks for `whistle` in the `PATH` By default",
+          "scope": "window"
+        }
+      }
+    },
     "grammars": [
       {
         "language": "whistle",
         "scopeName": "source.whistle",
         "path": "./syntaxes/whistle.tmLanguage.json"
       }
+    ],
+    "commands": [
+      {
+        "command": "whistle.restartServer",
+        "title": "Restart Whistle Server",
+        "category": "whistle"
+      }
     ]
   },
+  "activationEvents": [
+    "onLanguage:whistle",
+    "onDebugInitialConfigurations"
+  ],
+  "enabledApiProposals": [],
+  "main": "./out/extension",
   "devDependencies": {
+    "@types/mocha": "^2.2.48",
+    "@types/node": "^15.6.0",
+    "@types/semver": "7.3.9",
+    "@types/vscode": "1.67.0",
     "js-yaml": "^3.14.0",
-    "vsce": "^1.87.1"
+    "vsce": "^2.15.0",
+    "vscode": "^1.0.1",
+    "vscode-test": "^1.6.1"
+  },
+  "dependencies": {
+    "esbuild": "^0.12.1",
+    "lodash-es": "^4.17.21",
+    "lodash.debounce": "^4.0.8",
+    "vscode-languageclient": "^8.0.2"
   },
   "scripts": {
+    "compile": "esbuild --bundle --sourcemap=external --minify --external:vscode src/extension.ts --outdir=out --platform=node --format=cjs",
     "build": "js-yaml syntaxes/whistle.tmLanguage.yml > syntaxes/whistle.tmLanguage.json && js-yaml snippets/whistle.yml > snippets/whistle.json",
     "package": "vsce package",
-    "package:npm": "vsce package --no-yarn"
+    "package:npm": "vsce package --no-yarn",
+    "test": "npm run compile && npm run package:npm && node ./node_modules/vscode/bin/test",
+    "all": "npm run compile && npm run build && npm run package:npm"
   }
 }

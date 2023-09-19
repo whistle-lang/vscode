@@ -173,7 +173,7 @@ repository:
       name: constant.other.caps.whistle
       match: "\\b[A-Z]{2}[A-Z0-9_]*\\b"
     - comment: constant declarations
-      match: "\\b(const)\\s+([A-Z][A-Za-z0-9_]*)\\b"
+      match: "\\b(val)\\s+([A-Z][A-Za-z0-9_]*)\\b"
       captures:
         '1':
           name: storage.type.whistle
@@ -181,7 +181,7 @@ repository:
           name: constant.other.caps.whistle
     - comment: decimal integers and floats
       name: constant.numeric.decimal.whistle
-      match: "\\b\\d[\\d_]*(\\.?)[\\d_]*(?:(E)([+-])([\\d_]+))?(f32|f64|i128|i16|i32|i64|i8|isize|u128|u16|u32|u64|u8|usize)?\\b"
+      match: "\\b\\d[\\d_]*(\\.?)[\\d_]*(?:(E)([+-])([\\d_]+))?(f32|f64|i8|i16|i32|i64|u8|u16|u32|u64|number|int)?\\b"
       captures:
         '1':
           name: punctuation.separator.dot.decimal.whistle
@@ -195,19 +195,19 @@ repository:
           name: entity.name.type.numeric.whistle
     - comment: hexadecimal integers
       name: constant.numeric.hex.whistle
-      match: "\\b0x[\\da-fA-F_]+(i128|i16|i32|i64|i8|isize|u128|u16|u32|u64|u8|usize)?\\b"
+      match: "\\b0x[\\da-fA-F_]+(i8|i16|i32|i64|u8|u16|u32|u64|number)?\\b"
       captures:
         '1':
           name: entity.name.type.numeric.whistle
     - comment: octal integers
       name: constant.numeric.oct.whistle
-      match: "\\b0o[0-7_]+(i128|i16|i32|i64|i8|isize|u128|u16|u32|u64|u8|usize)?\\b"
+      match: "\\b0o[0-7_]+(i8|i16|i32|i64|u8|u16|u32|u64|number|int)?\\b"
       captures:
         '1':
           name: entity.name.type.numeric.whistle
     - comment: binary integers
       name: constant.numeric.bin.whistle
-      match: "\\b0b[01_]+(i128|i16|i32|i64|i8|isize|u128|u16|u32|u64|u8|usize)?\\b"
+      match: "\\b0b[01_]+(i8|i16|i32|i64|u8|u16|u32|u64|number|int)?\\b"
       captures:
         '1':
           name: entity.name.type.numeric.whistle
@@ -328,10 +328,10 @@ repository:
       match: "\\b(await|break|continue|do|else|for|if|loop|match|return|try|while|yield)\\b"
     - comment: storage keywords
       name: keyword.other.whistle storage.type.whistle
-      match: "\\b(extern|let|var|val|macro|mod)\\b"
+      match: "\\b(extern|var|val)\\b"
     - comment: const keyword
       name: storage.modifier.whistle
-      match: "\\b(const)\\b"
+      match: "\\b(val)\\b"
     - comment: type keyword
       name: keyword.declaration.type.whistle storage.type.whistle
       match: "\\b(type)\\b"
@@ -349,7 +349,7 @@ repository:
       match: "\\b(abstract|static)\\b"
     - comment: other keywords
       name: keyword.other.whistle
-      match: "\\b(as|async|import|export|from|become|box|dyn|move|final|impl|in|override|private|public|ref|typeof|union|unsafe|unsized|use|virtual|where)\\b"
+      match: "\\b(as|inline|async|import|export|extern|from|become|box|dyn|move|final|impl|in|override|private|public|ref|typeof|union|unsafe|unsized|virtual|where)\\b"
     - comment: fun
       name: keyword.other.fun.whistle
       match: "\\bfn\\b"
@@ -475,7 +475,7 @@ repository:
   types:
     patterns:
     - comment: numeric types
-      match: "(?<![A-Za-z])(f32|f64|i128|i16|i32|i64|i8|isize|u128|u16|u32|u64|u8|usize)\\b"
+      match: "(?<![A-Za-z])(f32|f64|i8|i16|i32|i64|u8|u16|u32|u64|number|int)\\b"
       captures:
         '1':
           name: entity.name.type.numeric.whistle
@@ -501,7 +501,7 @@ repository:
       - include: "#variables"
     - comment: primitive types
       name: entity.name.type.primitive.whistle
-      match: "\\b(bool|char|str)\\b"
+      match: "\\b(bool|char|str|none)\\b"
     - comment: trait declarations
       match: "\\b(trait)\\s+([A-Z][A-Za-z0-9]*)\\b"
       captures:
