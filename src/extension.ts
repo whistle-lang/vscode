@@ -1,4 +1,4 @@
-// deno-lint-ignore-file require-await no-explicit-any no-unused-vars
+// deno-lint-ignore-file require-await no-unused-vars
 import {
   CancellationToken,
   commands,
@@ -42,10 +42,12 @@ function createLanguageClient() {
       },
     },
   };
+
   const serverOptions: ServerOptions = {
     run,
     debug: run,
   };
+
   const clientOptions: LanguageClientOptions = {
     documentSelector: [{ scheme: "file", language: "whistle" }],
     synchronize: {
@@ -73,7 +75,6 @@ export async function activate(context: ExtensionContext) {
       try {
         if (client.isRunning()) {
           await client.restart();
-
           window.showInformationMessage("whistle server restarted.");
         } else {
           await client.start();
@@ -118,6 +119,7 @@ export function activateInlayHints(ctx: ExtensionContext) {
             };
             return ret;
           }
+
           async provideInlayHints(
             document: TextDocument,
             _range: Range,
@@ -174,6 +176,7 @@ export function activateInlayHints(ctx: ExtensionContext) {
     maybeUpdater,
     ctx.subscriptions,
   );
+
   workspace.onDidChangeTextDocument(
     maybeUpdater.onDidChangeTextDocument,
     maybeUpdater,
